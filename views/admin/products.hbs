@@ -1,0 +1,28 @@
+<h1 class="my-4">Products</h1>
+<a href="/dashboard/products/new" class="btn btn-primary mb-3">Add New Product</a>
+<ul class="list-group">
+  {{#each products}}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      {{this.name}}
+      <div>
+        <a href="/dashboard/products/{{this._id}}/edit" class="btn btn-sm btn-warning">Edit</a>
+        <button class="btn btn-sm btn-danger" onclick="confirmDelete('/dashboard/products/{{this._id}}')">Delete</button>
+      </div>
+    </li>
+  {{/each}}
+</ul>
+<script>
+  function confirmDelete(url) {
+    if (confirm('Are you sure you want to delete this product?')) {
+      fetch(url, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert('Error deleting product');
+          }
+        });
+    }
+  }
+</script>
