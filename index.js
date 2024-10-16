@@ -1,3 +1,4 @@
+// index.js
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -10,6 +11,7 @@ import authRoutes from './routes/authRoutes.js';
 import { engine } from 'express-handlebars';
 import adminRoutes from './routes/adminRoutes.js';
 import { protect } from './middleware/authMiddleware.js';
+import './handlebarsHelpers.js'; // Import helper
 
 dotenv.config();
 const app = express();
@@ -17,7 +19,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(methodOverride('_method'));
+app.use(methodOverride('_method')); // Đảm bảo dòng này tồn tại
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
@@ -44,6 +46,7 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
   res.render('login', { layout: 'main', isLoginPage: true });
 });
+
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI)
   .then(() => {

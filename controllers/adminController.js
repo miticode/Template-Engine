@@ -56,13 +56,13 @@ export const editProductForm = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const { name, price, category, description, isFeature } = req.body;
+  const { name, price, category, description, image } = req.body;
 
   // Validation
   if (!name || !price || !category || !description) {
     return res.status(400).json({ message: 'All fields are required' });
   }
-  if (!/^[a-zA-Z\s\/]+$/.test(name)) {
+  if (!/^[a-zA-Z0-9\s\/\W]+$/.test(name)) {
     return res.status(400).json({ message: 'Invalid product name' });
   }
   if (price < 0 || price > 999.999) {
@@ -74,30 +74,34 @@ export const createProduct = async (req, res) => {
     return res.status(400).json({ message: 'Product name must be unique' });
   }
 
-  const product = new Product({ name, price, category, description, isFeature });
+  const product = new Product({ name, price, category, description, image });
   await product.save();
   res.redirect('/dashboard/products');
 };
 
 export const updateProduct = async (req, res) => {
-  const { name, price, category, description, isFeature } = req.body;
+  const { name, price, category, description, image } = req.body;
 
   // Validation
   if (!name || !price || !category || !description) {
     return res.status(400).json({ message: 'All fields are required' });
   }
-  if (!/^[a-zA-Z\s\/]+$/.test(name)) {
+  if (!/^[a-zA-Z0-9\s\/\W]+$/.test(name)) {
     return res.status(400).json({ message: 'Invalid product name' });
   }
   if (price < 0 || price > 999.999) {
     return res.status(400).json({ message: 'Price must be between 0 and 999.999' });
   }
 
-  await Product.findByIdAndUpdate(req.params.id, { name, price, category, description, isFeature });
+  await Product.findByIdAndUpdate(req.params.id, { name, price, category, description, image });
   res.redirect('/dashboard/products');
 };
-
 export const deleteProduct = async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
+  try {
+    const productId = req.params.id;
+    await Product.findByIdAndDelete(productId);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
