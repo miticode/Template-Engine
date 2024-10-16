@@ -3,32 +3,22 @@ import Category from "../models/Category.js";
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, category, description } = req.body;
+    const { name, price, category, description, image } = req.body;
 
-    const categoryExists = await Category.findById(category);
-    if (!categoryExists) {
-      return res.status(400).json({ message: "Invalid category" });
+    console.log('Request Body:', req.body); // Thêm dòng này để kiểm tra giá trị của req.body
+
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ message: 'Invalid product name' });
     }
 
-    const productExists = await Product.findOne({ name });
-    if (productExists) {
-      return res.status(400).json({ message: "Product already exists" });
-    }
-
-    const product = new Product({ name, price, category, description });
+    const product = new Product({ name, price, category, description, image });
     await product.save();
 
-    const populatedProduct = await Product.findById(product._id).populate(
-      "category",
-      "name"
-    );
-
-    res.status(201).json(populatedProduct);
+    res.status(201).json(product);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
-
 export const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find().populate("category");
@@ -50,23 +40,21 @@ export const getProductById = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const { name, price, category, description } = req.body;
+    const { name, price, category, description, image } = req.body;
 
-    if (category) {
-      const categoryExists = await Category.findById(category);
-      if (!categoryExists)
-        return res.status(400).json({ message: "Invalid category" });
+    console.log('Request Body:', req.body); // Thêm dòng này để kiểm tra giá trị của req.body
+
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ message: 'Invalid product name' });
     }
 
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, price, category, description },
+      { name, price, category, description, image },
       { new: true, runValidators: true }
-    ).populate("category");
-
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    );
+    if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
-
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

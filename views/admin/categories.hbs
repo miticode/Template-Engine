@@ -3,7 +3,7 @@
 <ul class="list-group">
   {{#each categories}}
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      {{this.name}}
+      <a href="/dashboard/categories/{{this._id}}/products">{{this.name}}</a>
       <div>
         <a href="/dashboard/categories/{{this._id}}/edit" class="btn btn-sm btn-warning">Edit</a>
         <button class="btn btn-sm btn-danger" onclick="confirmDelete('/dashboard/categories/{{this._id}}')">Delete</button>
